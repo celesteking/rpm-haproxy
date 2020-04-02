@@ -163,7 +163,7 @@ exit 0
 %post
 %if 0%{?el7} || 0%{?amzn2} || 0%{?el8}
 %systemd_post %{name}.service
-systemctl restart rsyslog.service
+systemctl reload-or-try-restart rsyslog.service || :
 %endif
 
 %if 0%{?el6} || 0%{?amzn1}
@@ -186,7 +186,7 @@ fi
 %postun
 %if 0%{?el7} || 0%{?amzn2} || 0%{?el8}
 %systemd_postun_with_restart %{name}.service
-systemctl restart rsyslog.service
+systemctl reload-or-try-restart rsyslog.service || :
 %endif
 
 %if 0%{?el6} || 0%{?amzn1}
