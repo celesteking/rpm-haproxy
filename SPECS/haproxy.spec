@@ -38,7 +38,7 @@ BuildRequires: gcc openssl-devel
 BuildRequires: openssl-devel
 
 Requires(pre):      shadow-utils
-Requires:           rsyslog
+Requires:           syslog
 
 %if 0%{?el6} || 0%{?amzn1}
 Requires(post):     chkconfig, initscripts
