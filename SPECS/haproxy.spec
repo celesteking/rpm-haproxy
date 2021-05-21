@@ -2,6 +2,10 @@
 %define haproxy_group   %{haproxy_user}
 %define haproxy_home    %{_localstatedir}/lib/haproxy
 
+%if 0%{?rhel} == 7
+%define ssl_stuff SSL_INC=/usr/include/openssl11 SSL_LIB=/usr/lib64/openssl11
+%endif
+
 %if 0%{?rhel} > 6 && 0%{!?amzn2}
     %define dist %{expand:%%(/usr/lib/rpm/redhat/dist.sh --dist)}
 %endif
@@ -34,8 +38,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: pcre-devel
 BuildRequires: zlib-devel
 BuildRequires: make
-BuildRequires: gcc openssl-devel
-BuildRequires: openssl-devel
+BuildRequires: gcc
+BuildRequires: openssl11-devel
 
 Requires(pre):      shadow-utils
 Requires:           syslog
@@ -52,6 +56,10 @@ BuildRequires:      systemd-devel
 Requires(post):     systemd
 Requires(preun):    systemd
 Requires(postun):   systemd
+%endif
+
+%if 0%{?rhel} == 7
+Requires:	openssl11-libs
 %endif
 
 %description
@@ -104,7 +112,7 @@ USE_NS=1
 USE_LUA="USE_LUA=1"
 %endif
 
-%{__make} -j$RPM_BUILD_NCPUS %{?_smp_mflags} ${USE_LUA} CPU="generic" TARGET="linux-glibc" ${systemd_opts} ${pcre_opts} USE_OPENSSL=1 USE_ZLIB=1 ${regparm_opts} ADDINC="%{optflags}" USE_LINUX_TPROXY=1 USE_THREAD=1 USE_TFO=${USE_TFO} USE_NS=${USE_NS} ADDLIB="%{__global_ldflags}"
+%{__make} -j$RPM_BUILD_NCPUS %{?_smp_mflags} ${USE_LUA} CPU="generic" TARGET="linux-glibc" ${systemd_opts} ${pcre_opts} USE_OPENSSL=1 USE_ZLIB=1 ${regparm_opts} ADDINC="%{optflags}" USE_LINUX_TPROXY=1 USE_THREAD=1 USE_TFO=${USE_TFO} USE_NS=${USE_NS} ADDLIB="%{__global_ldflags}" %{ssl_stuff}
 
 pushd contrib/halog
 %{__make} ${halog} OPTIMIZE="%{optflags} %{__global_ldflags}"
